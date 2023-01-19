@@ -1,1 +1,6 @@
+<<<<<<< HEAD
 .env
+=======
+/.env
+config.json
+>>>>>>> 381f0e5 (first push)
