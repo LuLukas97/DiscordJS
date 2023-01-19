@@ -47,4 +47,6 @@ for (const file of eventFiles) {
   }
 }
 
+//test
+
 client.login(config.token);
