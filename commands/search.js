@@ -2,8 +2,16 @@ const ytsr = require("ytsr");
 const { SlashCommandBuilder, SlashCommandNumberOption } = require("discord.js");
 const { execute } = require("./ping");
 const ytdl = require("ytdl-core");
-const { name } = require("../events/interactionCreate");
 
+const { joinVoiceChannel } = require("@discordjs/voice");
+
+const connection = joinVoiceChannel({
+  channelId: 897833865740165127,
+  guildId: 897833865740165123,
+  adapterCreator: message.guild.voiceAdapterCreator,
+});
+
+connection();
 const options = {
   limit: 1,
 };
@@ -29,6 +37,12 @@ module.exports = {
       let videoLink = `https://www.youtube.com${video.link}`;
       return videoLink;
     });
+
+    const voiceChannel = interaction.message.member.voice.channel;
+    // Join the voice channel
+    const connection = await voiceChannel.join();
+    const stream = ytdl(videoLink.items[0].url, { filter: "audioonly" });
+    const dispatcher = connection.play(stream);
     console.log(videoLink.items[0].id + " id ");
     await interaction.reply(videoLink.items[0].url);
   },
