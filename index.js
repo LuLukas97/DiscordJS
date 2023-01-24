@@ -3,6 +3,7 @@ const { Player, QueryType } = require("discord-player");
 const fs = require("node:fs");
 const path = require("node:path");
 require("dotenv").config();
+const { joinVoiceChannel } = require("@discordjs/voice");
 
 const client = new Client({
   intents: [
@@ -11,6 +12,12 @@ const client = new Client({
     GatewayIntentBits.Guilds,
   ],
 });
+
+/* const connection = joinVoiceChannel({
+	channelId: channel.id, // Specific voice channel the bot needs to join
+	guildId: channel.guild.id, // Specific discord server the bot is in
+	adapterCreator: channel.guild.voiceAdapterCreator,
+}); */
 
 client.commands = new Collection();
 
