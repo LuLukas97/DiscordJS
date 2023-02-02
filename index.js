@@ -2,8 +2,8 @@ const { Client, GatewayIntentBits, Events, Collection } = require("discord.js");
 const { Player, QueryType } = require("discord-player");
 const fs = require("node:fs");
 const path = require("node:path");
+const { token } = require("./config.json");
 require("dotenv").config();
-const { joinVoiceChannel } = require("@discordjs/voice");
 
 const client = new Client({
   intents: [
@@ -12,12 +12,6 @@ const client = new Client({
     GatewayIntentBits.Guilds,
   ],
 });
-
-/* const connection = joinVoiceChannel({
-	channelId: channel.id, // Specific voice channel the bot needs to join
-	guildId: channel.guild.id, // Specific discord server the bot is in
-	adapterCreator: channel.guild.voiceAdapterCreator,
-}); */
 
 client.commands = new Collection();
 
@@ -29,16 +23,31 @@ const commandFiles = fs
 for (const file of commandFiles) {
   const filePath = path.join(commandsPath, file);
   const command = require(filePath);
-
-  if ("data" in command && "execute" in command) {
-    client.commands.set(command.data.name, command);
-  } else {
-    console.log(
-      `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
-    );
-  }
+  client.commands.set(command.data.name, command);
 }
 
+client.on(Events.InteractionCreate, async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+
+  const command = interaction.client.commands.get(interaction.commandName);
+  
+
+  if (!command) {
+    console.error(`No command matching ${interaction.commandName} was found.`);
+    return;
+  }
+
+  try {
+    await command.execute(interaction);
+  } catch (error) {
+    console.error(`Error executing ${interaction.commandName}`);
+    console.error(error);
+    await interaction.reply({
+      content: "There was an error while executing this command!",
+      ephemeral: true,
+    });
+  }
+});
 const eventsPath = path.join(__dirname, "events");
 const eventFiles = fs
   .readdirSync(eventsPath)
@@ -54,6 +63,5 @@ for (const file of eventFiles) {
   }
 }
 
-//test
 
 client.login(process.env.CLIENT_TOKEN);

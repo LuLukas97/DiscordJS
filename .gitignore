@@ -1,6 +1,5 @@
-<<<<<<< HEAD
 .env
-=======
 /.env
+.data
 config.json
->>>>>>> 381f0e5 (first push)
+.gitignore
